@@ -259,6 +259,12 @@
       }
     }, 500));
 
+    return {
+      resetCache: function() {
+        cache = [];
+      }
+    }
+
   };
 
 })( jQuery, window, document );
