@@ -14,7 +14,8 @@
     percentage: true,
     userTiming: true,
     pixelDepth: true,
-    nonInteraction: true
+    nonInteraction: true,
+    detachEventOnceCacheIsFull: true
   };
 
   var $window = $(window),
@@ -22,7 +23,8 @@
     lastPixelDepth = 0,
     universalGA,
     classicGA,
-    standardEventHandler;
+    standardEventHandler,
+    detachEventOnceCacheIsFull;
 
   /*
    * Plugin
@@ -240,7 +242,9 @@
 
       // If all marks already hit, unbind scroll event
       if (cache.length >= 4 + options.elements.length) {
-        $window.off('scroll.scrollDepth');
+        if (detachEventOnceCacheIsFull) {
+          $window.off('scroll.scrollDepth');
+        }
         return;
       }
 
@@ -254,6 +258,12 @@
         checkMarks(marks, scrollDistance, timing);
       }
     }, 500));
+
+    return {
+      resetCache: function() {
+        cache = [];
+      }
+    }
 
   };
 
