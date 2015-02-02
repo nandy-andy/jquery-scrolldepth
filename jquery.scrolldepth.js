@@ -260,8 +260,9 @@
     }, 500));
 
     return {
-      resetCache: function() {
+      reset: function() {
         cache = [];
+        lastPixelDepth = 0;
       }
     }
 
