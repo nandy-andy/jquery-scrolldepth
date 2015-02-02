@@ -41,6 +41,8 @@
       return;
     }
 
+    detachEventOnceCacheIsFull = options.detachEventOnceCacheIsFull;
+
     /*
      * Determine which version of GA is being used
      * "ga", "_gaq", and "dataLayer" are the possible globals
