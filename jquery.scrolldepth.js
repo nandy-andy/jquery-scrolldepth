@@ -33,7 +33,8 @@
 
   $.scrollDepth = function(options) {
 
-    var startTime = +new Date;
+    var startTime = +new Date,
+        docHeight = $(document).height();
 
     options = $.extend({}, defaults, options);
 
@@ -71,7 +72,7 @@
     if (options.percentage) {
       // Establish baseline (0% scroll)
       sendBaseline('Percentage');
-    } else if (options.elements) {
+    } else if (options.elements.length > 0) {
       sendBaseline('Elements');
     } else if (options.threshold !== null ) {
       sendBaseline('Threshold');
