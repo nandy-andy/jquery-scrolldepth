@@ -15,7 +15,8 @@
     userTiming: true,
     pixelDepth: true,
     nonInteraction: true,
-    detachEventOnceCacheIsFull: true
+    detachEventOnceCacheIsFull: true,
+    threshold: null
   };
 
   var $window = $(window),
@@ -38,6 +39,11 @@
 
     // Return early if document height is too small
     if ( $(document).height() < options.minHeight ) {
+      return;
+    }
+
+    // Return early if document height is too small
+    if ( options.threshold !== null && docHeight < options.threshold ) {
       return;
     }
 
@@ -67,6 +73,8 @@
       sendBaseline('Percentage');
     } else if (options.elements) {
       sendBaseline('Elements');
+    } else if (options.threshold !== null ) {
+      sendBaseline('Threshold');
     }
 
     /*
@@ -152,20 +160,38 @@
     }
 
     function calculateMarks(docHeight) {
-      return {
-        '25%' : parseInt(docHeight * 0.25, 10),
-        '50%' : parseInt(docHeight * 0.50, 10),
-        '75%' : parseInt(docHeight * 0.75, 10),
-        // 1px cushion to trigger 100% event in iOS
-        '100%': docHeight - 5
-      };
+      var marks = {},
+          threshold = options.threshold,
+          i,
+          steps;
+
+      if (options.percentage) {
+        marks = {
+          '25%' : parseInt(docHeight * 0.25, 10),
+          '50%' : parseInt(docHeight * 0.50, 10),
+          '75%' : parseInt(docHeight * 0.75, 10),
+          // 1px cushion to trigger 100% event in iOS
+          '100%': docHeight - 5
+        };
+      }
+
+      if (threshold) {
+        i = Math.floor(docHeight/threshold);
+        while( i > 0 ) {
+          steps = i * threshold;
+          marks['' + steps] = steps;
+          i--;
+        }
+      }
+
+      return marks;
     }
 
-    function checkMarks(marks, scrollDistance, timing) {
+    function checkMarks(marks, scrollDistance, timing, action) {
       // Check each active mark
       $.each(marks, function(key, val) {
         if ( $.inArray(key, cache) === -1 && scrollDistance >= val ) {
-          sendEvent('Percentage', key, scrollDistance, timing);
+          sendEvent((action ? action : 'Percentage'), key, scrollDistance, timing);
           cache.push(key);
         }
       });
@@ -243,7 +269,7 @@
         timing = +new Date - startTime;
 
       // If all marks already hit, unbind scroll event
-      if (cache.length >= 4 + options.elements.length) {
+      if (((options.percentage && cache.length >= 4) || (options.threshold && cache.length >= marks.length)) + options.elements.length) {
         if (detachEventOnceCacheIsFull) {
           $window.off('scroll.scrollDepth');
         }
@@ -258,6 +284,11 @@
       // Check standard marks
       if (options.percentage) {
         checkMarks(marks, scrollDistance, timing);
+      }
+
+      // Custom "threshold" marks
+      if (options.threshold) {
+        checkMarks(marks, scrollDistance, timing, 'Threshold');
       }
     }, 500));
 
