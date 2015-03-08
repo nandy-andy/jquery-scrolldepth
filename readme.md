@@ -7,7 +7,11 @@ Scroll Depth is a Google Analytics plugin that tracks how far users are scrollin
 Bug reports and code contributions are welcome. Please see [contributing.md](https://github.com/robflaherty/jquery-scrolldepth/blob/master/contributing.md).
 
 ## Testing
-There's a test HTML file that mocks the Google Analytics functions and writes the GA Event data to the console.
+jQuery recommends QUnit to test your stuff and Scroll Depth as a jQuery plugin follows the rule. To run Scroll Depth tests run:
+```
+bower install
+```
+to install QUnit dependency and then open in your browser `test/test.html` file.
 
 ## Contact
 If you have any questions you can find me on Twitter at [@robflaherty](https://twitter.com/robflaherty).
